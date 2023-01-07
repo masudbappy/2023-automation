@@ -1,10 +1,112 @@
 pipeline {
-    agent any
+	agent any
+	options {
+		skipDefaultCheckout()
+	}
+    environment {
+        AUTOMATION_GIT_BRANCH = 'jenkins_pipeline'
+    }
+    parameters {
+        choice(name: 'ENV_DIRECTORY', choices:  'stg\nstg-dev\nstg-load\nstg-qa', description: 'configuration directory')
+
+        booleanParam(defaultValue: true, name: 'CHECKOUT')
+        booleanParam(defaultValue: true, name: 'BUILD')
+        booleanParam(defaultValue: true, name: 'DOCKER_BUILD')
+        booleanParam(defaultValue: true, name: 'PUSH')
+        booleanParam(defaultValue: true, name: 'DEPLOY')
+        booleanParam(defaultValue: true, name: 'SWITCH')
+        string(name: "PRODUCT_MODULE_GIT_BRANCH", description: 'passed from prior "poll" job like:<br>"origin/feature/&lt;branch name&gt;" or<br>"refs/tags/&lt;tag name&gt;"', defaultValue: 'develop')
+    }
     stages {
-        stage('Stage 1') {
+        stage('Preparation') {
             steps {
-                echo 'Hello world!'
+                echo "[PREPARATION] START"
+                script {
+					productModuleGitUrl = 'https://github.com/masudbappy/2023.1-product_module.git'
+                  	productModuleBaseDir = 'api_base_dir'
+                    automationGitUrl = 'https://github.com/masudbappy/2023-automation.git'
+                    automationBranch = env.AUTOMATION_GIT_BRANCH
+                    automationDir = 'automation_dir'
+                    configDir = automationDir + '/05_MobileAppAPIs/0503_ConfigServer/050302_SpringCloudConfigServer/appConfig'
+
+                    }
+                echo "[PREPARATION] END"
             }
+        }
+        stage('Checkout') {
+            when { expression { return params.CHECKOUT } }
+            steps {
+                echo "[CHECKOUT] START"
+                checkout([$class: 'GitSCM',
+                          branches: [[name: params.PRODUCT_MODULE_GIT_BRANCH]],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [[$class: 'RelativeTargetDirectory',
+                                        relativeTargetDir: productModuleBaseDir]],
+                          submoduleCfg: [],
+                          userRemoteConfigs: [[credentialsId: 'git-token',
+                                               url: productModuleGitUrl]]])
+                echo "product_module .............."
+                checkout([$class: 'GitSCM',
+                          branches: [[name: automationBranch]],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [[$class: 'RelativeTargetDirectory',
+                                        relativeTargetDir: automationDir]],
+                          submoduleCfg: [],
+                          userRemoteConfigs: [[credentialsId: 'git-token',
+                                               url: automationGitUrl]]])
+                echo "product_module .............."
+
+                echo "[CHECKOUT] END"
+            }
+        }
+        stage('Build') {
+            steps {
+                echo "[BUILD] START"
+
+                echo "[BUILD] END"
+            }
+        }
+        stage('Docker build'){
+            when { expression { return params.DOCKER_BUILD } }
+            steps {
+                echo "[Docker build] START"
+
+                echo "[Docker build] END"
+            }
+        }
+        stage('Docker push'){
+            when { expression { return params.PUSH } }
+            steps {
+                echo "[Docker push] START"
+
+                echo "[Docker push] END"
+            }
+        }
+        stage('Deploy and switch preparation') {
+            when { expression { return params.DEPLOY } }
+            steps {
+                echo "[Deploy and switch preparation] START"
+
+                echo "[Deploy and switch preparation] END"
+            }
+        }
+        stage('Deploy') {
+            when { expression { return params.DEPLOY } }
+            steps {
+                echo "[DEPLOY] START"
+                echo "[DEPLOY] END"
+            }
+        }
+        stage('Switch') {
+            when { expression { return params.SWITCH } }
+            steps {
+                echo "[SWITCH] START"
+            }
+        }
+    }
+    post {
+        always {
+            deleteDir()
         }
     }
 }
