@@ -37,7 +37,7 @@ pipeline {
             when { expression { return params.CHECKOUT } }
             steps {
                 echo "[CHECKOUT] START"
-                checkout([$class: 'GitSCM',
+                /* checkout([$class: 'GitSCM',
                           branches: [[name: params.PRODUCT_MODULE_GIT_BRANCH]],
                           doGenerateSubmoduleConfigurations: false,
                           extensions: [[$class: 'RelativeTargetDirectory',
@@ -45,9 +45,9 @@ pipeline {
                           submoduleCfg: [],
                           userRemoteConfigs: [[credentialsId: 'git-token',
                                                url: productModuleGitUrl]]])
-                echo "product_module .............."
+                echo "product_module .............." */
                 checkout([$class: 'GitSCM',
-                          branches: [[name: automationBranch]],
+                          branches: [[name: 'jenkins_pipeline']],
                           doGenerateSubmoduleConfigurations: false,
                           extensions: [[$class: 'RelativeTargetDirectory',
                                         relativeTargetDir: automationDir]],
@@ -55,6 +55,15 @@ pipeline {
                           userRemoteConfigs: [[credentialsId: 'git-token',
                                                url: automationGitUrl]]])
                 echo "product_module .............."
+                /* checkout([$class: 'GitSCM',
+                          branches: [[name: env.AUTOMATION_GIT_BRANCH]],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [[$class: 'RelativeTargetDirectory',
+                                        relativeTargetDir: automationDir]],
+                          submoduleCfg: [],
+                          userRemoteConfigs: [[credentialsId: 'git-token',
+                                               url: automationGitUrl]]]) */
+                echo "automation project .............."
 
                 echo "[CHECKOUT] END"
             }
