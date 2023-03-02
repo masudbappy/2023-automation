@@ -22,7 +22,7 @@ pipeline {
             steps {
                 echo "[PREPARATION] START"
                 script {
-					productModuleGitUrl = 'https://github.com/masudbappy/2023.1-product_module.git'
+					productModuleGitUrl = 'https://github.com/masudbappy/eureka-server.git'
                   	productModuleBaseDir = 'api_base_dir'
                     automationGitUrl = 'https://github.com/masudbappy/2023-automation.git'
                     automationBranch = env.AUTOMATION_GIT_BRANCH
