@@ -15,15 +15,15 @@ pipeline {
         booleanParam(defaultValue: true, name: 'PUSH')
         booleanParam(defaultValue: true, name: 'DEPLOY')
         booleanParam(defaultValue: true, name: 'SWITCH')
-        string(name: "PRODUCT_MODULE_GIT_BRANCH", description: 'passed from prior "poll" job like:<br>"origin/feature/&lt;branch name&gt;" or<br>"refs/tags/&lt;tag name&gt;"', defaultValue: 'develop')
+        string(name: "EUREKA_SERVER_GIT_BRANCH", description: 'passed from prior "poll" job like:<br>"origin/feature/&lt;branch name&gt;" or<br>"refs/tags/&lt;tag name&gt;"', defaultValue: 'develop')
     }
     stages {
         stage('Preparation') {
             steps {
                 echo "[PREPARATION] START"
                 script {
-					productModuleGitUrl = 'https://github.com/masudbappy/eureka-server.git'
-                  	productModuleBaseDir = 'api_base_dir'
+					eurekaServerGitUrl = 'https://github.com/masudbappy/eureka-server.git'
+                  	eurekaServerBaseDir = 'api_base_dir'
                     automationGitUrl = 'https://github.com/masudbappy/2023-automation.git'
                     automationBranch = env.AUTOMATION_GIT_BRANCH
                     automationDir = 'automation_dir'
@@ -37,33 +37,18 @@ pipeline {
             when { expression { return params.CHECKOUT } }
             steps {
                 echo "[CHECKOUT] START"
-                /* checkout([$class: 'GitSCM',
-                          branches: [[name: params.PRODUCT_MODULE_GIT_BRANCH]],
-                          doGenerateSubmoduleConfigurations: false,
-                          extensions: [[$class: 'RelativeTargetDirectory',
-                                        relativeTargetDir: productModuleBaseDir]],
-                          submoduleCfg: [],
-                          userRemoteConfigs: [[credentialsId: 'git-token',
-                                               url: productModuleGitUrl]]])
-                echo "product_module .............." */
-                checkout([$class: 'GitSCM',
-                          branches: [[name: 'jenkins_pipeline']],
-                          doGenerateSubmoduleConfigurations: false,
-                          extensions: [[$class: 'RelativeTargetDirectory',
-                                        relativeTargetDir: automationDir]],
-                          submoduleCfg: [],
-                          userRemoteConfigs: [[credentialsId: 'git-token',
-                                               url: automationGitUrl]]])
-                echo "product_module .............."
-                /* checkout([$class: 'GitSCM',
-                          branches: [[name: env.AUTOMATION_GIT_BRANCH]],
-                          doGenerateSubmoduleConfigurations: false,
-                          extensions: [[$class: 'RelativeTargetDirectory',
-                                        relativeTargetDir: automationDir]],
-                          submoduleCfg: [],
-                          userRemoteConfigs: [[credentialsId: 'git-token',
-                                               url: automationGitUrl]]]) */
-                echo "automation project .............."
+                checkout scmGit(
+                    branches: [[name: automationBranch]],
+                    extensions: [],
+                    userRemoteConfigs: [[url: automationGitUrl]]
+                    )
+                echo ".......automation project end .............."
+                checkout scmGit(
+                    branches: [[name: params.EUREKA_SERVER_GIT_BRANCH]],
+                    extensions: [],
+                    userRemoteConfigs: [[url: eurekaServerGitUrl]]
+                    )
+                echo ".......eureka git checkout end .............."
 
                 echo "[CHECKOUT] END"
             }
