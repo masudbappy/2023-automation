@@ -37,11 +37,12 @@ pipeline {
             when { expression { return params.CHECKOUT } }
             steps {
                 echo "[CHECKOUT] START"
-                checkout scmGit(
+                /* checkout scmGit(
                     branches: [[name: automationBranch]],
                     extensions: [],
                     userRemoteConfigs: [[url: automationGitUrl]]
-                    )
+                    ) */
+                checkout scmGit(branches: [[name: 'jenkins_pipleline']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/masudbappy/2023-automation.git']])
                 echo ".......automation project end .............."
                 checkout scmGit(
                     branches: [[name: params.EUREKA_SERVER_GIT_BRANCH]],
