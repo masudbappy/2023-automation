@@ -60,9 +60,6 @@ pipeline {
                     return params.BUILD
                 }
             }
-            tools {
-                gradle 'Gradle 8.0.2'
-            }
             steps {
                 echo "[BUILD] START"
                 script {
