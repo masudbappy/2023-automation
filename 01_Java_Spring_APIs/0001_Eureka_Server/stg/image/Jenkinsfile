@@ -61,7 +61,7 @@ pipeline {
                 }
             }
             tools {
-                jdk 'JDK11'
+                gradle 'Gradle 8.0.2'
             }
             steps {
                 echo "[BUILD] START"
