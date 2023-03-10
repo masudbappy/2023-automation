@@ -55,9 +55,19 @@ pipeline {
             }
         }
         stage('Build') {
+            when {
+                expression {
+                    return params.BUILD
+                }
+            }
+            tools {
+                jdk 'JDK11'
+            }
             steps {
                 echo "[BUILD] START"
-
+                script {
+                    sh "cd ${eurekaServerBaseDir} && chmod +x gradlew && ./gradlew clean build"
+                }
                 echo "[BUILD] END"
             }
         }
