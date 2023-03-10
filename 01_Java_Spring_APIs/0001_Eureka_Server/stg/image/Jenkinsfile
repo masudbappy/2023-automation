@@ -63,9 +63,9 @@ pipeline {
             steps {
                 echo "[BUILD] START"
                 script {
-			dir(api_base_dir) {
-    				sh "cd ${eurekaServerBaseDir} && chmod +x gradlew && ./gradlew clean build"
-			}
+			
+    		    sh "chmod +x gradlew && ./gradlew clean build"
+			
                 }
                 echo "[BUILD] END"
             }
